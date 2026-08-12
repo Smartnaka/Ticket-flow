@@ -1,15 +1,17 @@
 import { X } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserRole } from '../types';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (user: any, token: string) => void;
+  initialMode?: 'login' | 'register' | 'forgot' | 'reset';
+  resetToken?: string | null;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initialMode = 'login', resetToken }) => {
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -20,6 +22,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const [infoMsg, setInfoMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setError('');
+      setInfoMsg('');
+    }
+  }, [initialMode, isOpen]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +37,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
     setError('');
     setInfoMsg('');
 
-    if (mode === 'register') {
+    if (mode === 'register' || mode === 'reset') {
       if (password !== passwordConfirm) {
         setError('Passwords do not match.');
         return;
@@ -50,6 +60,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed to request password reset');
         setInfoMsg(data.message);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+
+
+    if (mode === 'reset') {
+      try {
+        const res = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: resetToken, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to reset password');
+        setInfoMsg(data.message);
+        setPassword('');
+        setPasswordConfirm('');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setMode('login');
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -98,6 +132,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               ? 'Create TicketWave Account'
               : mode === 'forgot'
               ? 'Reset Your Password'
+              : mode === 'reset'
+              ? 'Choose a New Password'
               : 'Welcome Back'}
           </h2>
           <p className="text-xs text-slate-400">
@@ -105,6 +141,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               ? 'Join thousands of eventgoers and organizers'
               : mode === 'forgot'
               ? 'Enter your email to receive password reset instructions'
+              : mode === 'reset'
+              ? 'Enter and confirm your new password to complete account recovery'
               : 'Sign in to access your tickets and orders'}
           </p>
         </div>
@@ -167,10 +205,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             </>
           )}
 
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Email Address
-            </label>
+          {mode !== 'reset' && (
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1">
+                Email Address
+              </label>
             <input
               type="email"
               required
@@ -178,8 +217,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
-            />
-          </div>
+              />
+            </div>
+          )}
 
           {mode !== 'forgot' && (
             <div>
@@ -212,7 +252,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             </div>
           )}
 
-          {mode === 'register' && (
+          {(mode === 'register' || mode === 'reset') && (
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1">
                 Confirm Password
@@ -239,6 +279,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               ? 'Create Account'
               : mode === 'forgot'
               ? 'Send Reset Link'
+              : mode === 'reset'
+              ? 'Update Password'
               : 'Sign In'}
           </button>
         </form>
@@ -257,7 +299,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             </button>
           )}
 
-          {(mode === 'register' || mode === 'forgot') && (
+          {(mode === 'register' || mode === 'forgot' || mode === 'reset') && (
             <button
               onClick={() => {
                 setMode('login');

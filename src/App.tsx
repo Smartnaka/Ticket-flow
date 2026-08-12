@@ -54,6 +54,8 @@ export default function App() {
 
   // Modals State
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authInitialMode, setAuthInitialMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
+  const [passwordResetToken, setPasswordResetToken] = useState<string | null>(null);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [refundModalOpen, setRefundModalOpen] = useState(false);
   const [orderToRefund, setOrderToRefund] = useState<Order | null>(null);
@@ -145,9 +147,17 @@ export default function App() {
     if (currentView === 'admin-dashboard') fetchAdminAnalytics();
   }, [currentView, role]);
 
-  // Handle URL Payment Callback Query
+  // Handle URL Payment Callback Query and password reset deep links
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const resetToken = params.get('token');
+    if (window.location.pathname === '/reset-password' && resetToken) {
+      setPasswordResetToken(resetToken);
+      setAuthInitialMode('reset');
+      setAuthModalOpen(true);
+      return;
+    }
+
     const ref = params.get('ref');
     if (ref) {
       setPaymentStatusRef(ref);
@@ -230,7 +240,10 @@ export default function App() {
         currentRole={role}
         currentView={currentView}
         onNavigate={(view) => setCurrentView(view)}
-        onOpenAuthModal={() => setAuthModalOpen(true)}
+        onOpenAuthModal={() => {
+          setAuthInitialMode('login');
+          setAuthModalOpen(true);
+        }}
         onRoleSwitch={() => {}}
         user={user}
         onLogout={handleLogout}
@@ -709,8 +722,17 @@ export default function App() {
       {/* MODALS */}
       <AuthModal
         isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
+        onClose={() => {
+          setAuthModalOpen(false);
+          if (authInitialMode === 'reset') {
+            setAuthInitialMode('login');
+            setPasswordResetToken(null);
+            window.history.replaceState({}, document.title, '/');
+          }
+        }}
         onSuccess={(u, t) => handleAuthSuccess(u, t)}
+        initialMode={authInitialMode}
+        resetToken={passwordResetToken}
       />
 
       {activeEventDetail && (

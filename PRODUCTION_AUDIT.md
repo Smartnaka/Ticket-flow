@@ -37,8 +37,8 @@
 | Feature Module | Status | Description / Classification |
 | :--- | :--- | :--- |
 | **User Authentication (Login/Register)** | **WORKING** | JWT token issue, bcrypt password hashing, input validation. |
-| **Password Reset / Forgot Password** | **MISSING** | Needs `/api/auth/forgot-password` and `/api/auth/reset-password` endpoints and UI. |
-| **Session Persistence** | **PARTIALLY WORKING** | Frontend state reset on refresh, needs `localStorage` JWT token restore on mount via `/api/auth/me`. |
+| **Password Reset / Forgot Password** | **WORKING** | `/api/auth/forgot-password` and `/api/auth/reset-password` endpoints are implemented with modal-based request/reset UI. |
+| **Session Persistence** | **WORKING** | JWT is restored from `localStorage` on mount and verified through `/api/auth/me`. |
 | **Event Discovery & Filtering** | **WORKING** | DB-backed search by title/location and category filtering. |
 | **Event Creation & Management** | **WORKING** | Organizers create events with multiple ticket tiers (VIP, Regular, etc.), venue info, dates, and images. |
 | **Ticket Inventory & Anti-Overselling** | **WORKING** | Transactional inventory reservation locking prevents race conditions and overselling. |
@@ -51,22 +51,20 @@
 | **Analytics & Dashboards** | **WORKING** | DB-aggregated metrics for Organizer (revenue, tickets sold, attendance) and Admin (platform fees, user growth). |
 | **Audit Logging** | **WORKING** | Records sensitive actions (`USER_REGISTERED`, `EVENT_CREATED`, `ORDER_CREATED`, `PAYMENT_SUCCESSFUL`, `REFUND_PROCESSED`, `TICKET_SCANNED`). |
 | **Email Service Abstraction** | **WORKING** | Transactional emails for welcome, ticket delivery, and refunds. |
-| **Rate Limiting & Security** | **MISSING** | Express rate-limiting middleware for auth/payment endpoints. |
+| **Rate Limiting & Security** | **WORKING** | Express rate-limiting middleware protects auth, checkout, payments, and webhook endpoints, with baseline security headers. |
 
 ---
 
 ## 3. Production Gaps Identified
 
 1. **Auth UI & Session Restoration**:
-   - The frontend currently initializes a hardcoded default user state (`Chidi Okonkwo`) on initial load.
-   - Must restore actual session from `localStorage` token via `/api/auth/me` on mount.
-   - Missing Forgot Password & Reset Password modal/flow in Auth UI.
+   - The frontend restores actual sessions from `localStorage` via `/api/auth/me` and supports forgot/reset password recovery flows.
 
 2. **Role Switching in UI**:
-   - `App.tsx` contains a manual role switcher that overwrote user credentials with mock users. Needs to be replaced with real user login/logout state and server-verified roles.
+   - Manual role switching has been disabled in favor of real login/logout state and server-verified roles.
 
 3. **Rate Limiting & Input Validation**:
-   - Auth and checkout endpoints require strict rate limiting to protect against brute-force attacks and abuse.
+   - Auth, checkout, payment, and webhook endpoints use in-process IP rate limiting to protect against brute-force attacks and abuse.
 
 4. **Empty & Error States**:
    - UI views must show informative empty states when no user tickets or organizer events exist, rather than failing silently or using fake data.

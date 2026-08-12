@@ -21,9 +21,23 @@ async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Strict rate limiter for Auth & Checkout (20 req / 15 mins)
+  // Strict rate limiters for sensitive auth, checkout, payment, and webhook endpoints
   const authRateLimiter = createRateLimiter(15 * 60 * 1000, 30);
   const checkoutRateLimiter = createRateLimiter(15 * 60 * 1000, 20);
+  const paymentRateLimiter = createRateLimiter(15 * 60 * 1000, 40);
+  const webhookRateLimiter = createRateLimiter(60 * 1000, 120);
+
+  // Security headers without extra runtime dependencies
+  app.use((req, res, next) => {
+    res.header('X-Content-Type-Options', 'nosniff');
+    res.header('X-Frame-Options', 'SAMEORIGIN');
+    res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    if (process.env.NODE_ENV === 'production') {
+      res.header('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+    }
+    next();
+  });
 
   // CORS middleware for iframe preview compatibility
   app.use((req, res, next) => {
@@ -50,8 +64,8 @@ async function startServer() {
   app.use('/api/auth', authRateLimiter, authRoutes);
   app.use('/api/events', eventRoutes);
   app.use('/api/checkout', checkoutRateLimiter, checkoutRoutes);
-  app.use('/api/payments', paymentRoutes);
-  app.use('/api/webhooks', webhookRoutes);
+  app.use('/api/payments', paymentRateLimiter, paymentRoutes);
+  app.use('/api/webhooks', webhookRateLimiter, webhookRoutes);
   app.use('/api/tickets', ticketRoutes);
   app.use('/api/refunds', refundRoutes);
   app.use('/api/analytics', analyticsRoutes);
