@@ -6,6 +6,7 @@ import { TicketService } from '../services/ticket';
 import { WebhookService } from '../services/webhook';
 
 async function runAllTests() {
+  db.seedInitialDataForDevelopment();
   console.log('----------------------------------------------------');
   console.log('   TICKETWAVE PRODUCTION TEST SUITE RUNNER         ');
   console.log('----------------------------------------------------');

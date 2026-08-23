@@ -15,9 +15,10 @@ router.get('/organizer', (req: Request, res: Response) => {
   }
 
   const organizerProfile = Array.from(db.organizers.values()).find((o) => o.user_id === user.id);
-  const organizerId = organizerProfile ? organizerProfile.id : 'org_profile_001';
+  if (!organizerProfile && user.role !== 'ADMIN') return res.status(404).json({ error: 'Organizer profile not found' });
+  const organizerId = organizerProfile?.id;
 
-  const analytics = db.getOrganizerAnalytics(organizerId);
+  const analytics = db.getOrganizerAnalytics(organizerId || '');
   res.json(analytics);
 });
 
@@ -50,11 +51,17 @@ router.get('/audit-logs', (req: Request, res: Response) => {
 
 // GET /api/webhook-logs
 router.get('/webhook-logs', (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  const user = authHeader && AuthService.getUserFromToken(authHeader.replace('Bearer ', ''));
+  if (!user || user.role !== 'ADMIN') return res.status(403).json({ error: 'Admin permission required' });
   res.json(Array.from(db.webhookEvents.values()));
 });
 
 // GET /api/sent-emails
 router.get('/sent-emails', (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  const user = authHeader && AuthService.getUserFromToken(authHeader.replace('Bearer ', ''));
+  if (!user || user.role !== 'ADMIN') return res.status(403).json({ error: 'Admin permission required' });
   res.json(db.sentEmails);
 });
 

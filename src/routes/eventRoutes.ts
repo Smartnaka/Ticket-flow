@@ -82,8 +82,12 @@ router.post('/', (req: Request, res: Response) => {
     ticket_types,
   } = req.body;
 
-  if (!title || !description || !start_date || !end_date) {
-    return res.status(400).json({ error: 'Title, description, start_date, and end_date are required' });
+  if (!title || !description || !venue || !location || !city || !country || !category || !start_date || !end_date || !Array.isArray(ticket_types) || !ticket_types.length) {
+    return res.status(400).json({ error: 'title, description, location, venue, city, country, category, dates, and at least one ticket type are required' });
+  }
+  if (Number.isNaN(Date.parse(start_date)) || Number.isNaN(Date.parse(end_date)) || new Date(end_date) <= new Date(start_date)) return res.status(400).json({ error: 'Event dates must be valid and end_date must be after start_date' });
+  if (ticket_types.some((tt: any) => !tt?.name || !Number.isFinite(Number(tt.price)) || Number(tt.price) < 0 || !Number.isInteger(Number(tt.quantity)) || Number(tt.quantity) < 1)) {
+    return res.status(400).json({ error: 'Each ticket type requires a name, non-negative price, and positive integer quantity' });
   }
 
   let organizerProfile = Array.from(db.organizers.values()).find((o) => o.user_id === user.id);
@@ -116,12 +120,8 @@ router.post('/', (req: Request, res: Response) => {
     title,
     slug,
     description,
-    cover_image: cover_image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
-    location: location || 'TBD',
-    venue: venue || 'TBD',
-    city: city || 'Lagos',
-    country: country || 'Nigeria',
-    category: category || 'General',
+    cover_image: cover_image || '',
+    location, venue, city, country, category,
     start_date,
     end_date,
     status: 'PUBLISHED',
@@ -139,7 +139,7 @@ router.post('/', (req: Request, res: Response) => {
   const createdTicketTypes: TicketType[] = [];
   if (Array.isArray(ticket_types) && ticket_types.length > 0) {
     for (const tt of ticket_types) {
-      const priceNaira = Number(tt.price) || 0;
+      const priceNaira = Number(tt.price);
       const priceKobo = Math.round(priceNaira * 100);
 
       const newTt: TicketType = {
@@ -186,8 +186,11 @@ router.patch('/:id', (req: Request, res: Response) => {
 
   const event = db.getEventById(req.params.id);
   if (!event) return res.status(404).json({ error: 'Event not found' });
+  const organizer = Array.from(db.organizers.values()).find((profile) => profile.user_id === user.id);
+  if (user.role !== 'ADMIN' && event.organizer_id !== organizer?.id) return res.status(403).json({ error: 'You do not own this event' });
 
-  const updates = req.body;
+  const allowedFields = ['title', 'description', 'cover_image', 'location', 'venue', 'city', 'country', 'category', 'start_date', 'end_date', 'status', 'is_published', 'ticket_sales_start', 'ticket_sales_end', 'max_capacity'];
+  const updates = Object.fromEntries(Object.entries(req.body).filter(([key]) => allowedFields.includes(key)));
   Object.assign(event, updates, { updated_at: new Date().toISOString() });
   db.events.set(event.id, event);
 

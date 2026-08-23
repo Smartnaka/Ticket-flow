@@ -1,5 +1,11 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+// node:sqlite is shipped with the supported Node 22 runtime.  Its type
+// declarations are not present in all @types/node releases yet.
+// @ts-ignore
+import { DatabaseSync } from 'node:sqlite';
 import {
   AuditLog,
   Event,
@@ -18,31 +24,86 @@ import {
 } from '../types';
 
 /**
- * TicketWave Production SQL & Transactional Storage Engine
- * Simulates normalized relational database with ACID isolation & inventory locking.
+ * TicketWave durable SQLite storage engine. State is persisted on every write;
+ * no sample records are loaded automatically.
  */
+class PersistentMap<K, V> extends Map<K, V> {
+  constructor(private readonly onChange: () => void) { super(); }
+  override set(key: K, value: V) { const result = super.set(key, value); this.onChange(); return result; }
+  override delete(key: K) { const result = super.delete(key); if (result) this.onChange(); return result; }
+  override clear() { super.clear(); this.onChange(); }
+}
+
 class DatabaseEngine {
-  public users: Map<string, User> = new Map();
-  public userPasswords: Map<string, string> = new Map(); // user_id -> password_hash
-  public organizers: Map<string, OrganizerProfile> = new Map();
-  public events: Map<string, Event> = new Map();
-  public ticketTypes: Map<string, TicketType> = new Map();
-  public orders: Map<string, Order> = new Map();
-  public orderItems: Map<string, OrderItem[]> = new Map(); // order_id -> OrderItem[]
-  public tickets: Map<string, Ticket> = new Map();
-  public payments: Map<string, Payment> = new Map();
-  public refunds: Map<string, Refund> = new Map();
-  public webhookEvents: Map<string, WebhookEvent> = new Map();
+  public users: Map<string, User>;
+  public userPasswords: Map<string, string>; // user_id -> password_hash
+  public organizers: Map<string, OrganizerProfile>;
+  public events: Map<string, Event>;
+  public ticketTypes: Map<string, TicketType>;
+  public orders: Map<string, Order>;
+  public orderItems: Map<string, OrderItem[]>; // order_id -> OrderItem[]
+  public tickets: Map<string, Ticket>;
+  public payments: Map<string, Payment>;
+  public refunds: Map<string, Refund>;
+  public webhookEvents: Map<string, WebhookEvent>;
   public auditLogs: AuditLog[] = [];
   public sentEmails: SentEmail[] = [];
   public resetTokens: Map<string, { userId: string; token: string; expiresAt: number; used: boolean }> = new Map();
 
   // Locks for concurrency control
   private ticketLocks: Map<string, boolean> = new Map();
+  private sqlite: any;
+  private isRestoring = true;
 
   constructor() {
-    this.seedInitialData();
+    const configuredPath = process.env.DATABASE_URL || 'file:./data/ticketwave.db';
+    if (!configuredPath.startsWith('file:')) {
+      throw new Error('This deployment uses SQLite. DATABASE_URL must be a file: URL. Use a persistent mounted volume in production.');
+    }
+    const databasePath = path.resolve(process.cwd(), configuredPath.slice('file:'.length));
+    fs.mkdirSync(path.dirname(databasePath), { recursive: true });
+    this.sqlite = new DatabaseSync(databasePath);
+    this.sqlite.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON; CREATE TABLE IF NOT EXISTS application_state (id INTEGER PRIMARY KEY CHECK (id = 1), payload TEXT NOT NULL, updated_at TEXT NOT NULL);');
+    const persist = () => this.persist();
+    this.users = new PersistentMap(persist);
+    this.userPasswords = new PersistentMap(persist);
+    this.organizers = new PersistentMap(persist);
+    this.events = new PersistentMap(persist);
+    this.ticketTypes = new PersistentMap(persist);
+    this.orders = new PersistentMap(persist);
+    this.orderItems = new PersistentMap(persist);
+    this.tickets = new PersistentMap(persist);
+    this.payments = new PersistentMap(persist);
+    this.refunds = new PersistentMap(persist);
+    this.webhookEvents = new PersistentMap(persist);
+    this.restore();
+    this.isRestoring = false;
   }
+
+  private restore() {
+    const row = this.sqlite.prepare('SELECT payload FROM application_state WHERE id = 1').get() as { payload: string } | undefined;
+    if (!row) return;
+    const state = JSON.parse(row.payload);
+    const restoreMap = (map: Map<string, any>, entries: [string, any][] = []) => entries.forEach(([key, value]) => map.set(key, value));
+    restoreMap(this.users, state.users); restoreMap(this.userPasswords, state.userPasswords); restoreMap(this.organizers, state.organizers);
+    restoreMap(this.events, state.events); restoreMap(this.ticketTypes, state.ticketTypes); restoreMap(this.orders, state.orders);
+    restoreMap(this.orderItems, state.orderItems); restoreMap(this.tickets, state.tickets); restoreMap(this.payments, state.payments);
+    restoreMap(this.refunds, state.refunds); restoreMap(this.webhookEvents, state.webhookEvents);
+    this.auditLogs = state.auditLogs || []; this.sentEmails = state.sentEmails || []; this.resetTokens = new Map(state.resetTokens || []);
+  }
+
+  private persist() {
+    if (this.isRestoring) return;
+    const state = {
+      users: [...this.users], userPasswords: [...this.userPasswords], organizers: [...this.organizers], events: [...this.events],
+      ticketTypes: [...this.ticketTypes], orders: [...this.orders], orderItems: [...this.orderItems], tickets: [...this.tickets],
+      payments: [...this.payments], refunds: [...this.refunds], webhookEvents: [...this.webhookEvents], auditLogs: this.auditLogs,
+      sentEmails: this.sentEmails, resetTokens: [...this.resetTokens],
+    };
+    this.sqlite.prepare('INSERT INTO application_state (id, payload, updated_at) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET payload = excluded.payload, updated_at = excluded.updated_at').run(JSON.stringify(state), new Date().toISOString());
+  }
+
+  public persistState() { this.persist(); }
 
   // --- Transaction Runner ---
   public runInTransaction<T>(work: () => T): T {
@@ -50,8 +111,9 @@ class DatabaseEngine {
     return work();
   }
 
-  // --- Seed Data ---
-  private seedInitialData() {
+  // Development-only fixture helper. It is intentionally never called at startup.
+  // Production data must be created through authenticated application flows.
+  public seedInitialDataForDevelopment() {
     // 1. Users
     const adminPasswordHash = bcrypt.hashSync('Admin123!', 10);
     const orgPasswordHash = bcrypt.hashSync('Organizer123!', 10);
@@ -360,6 +422,7 @@ class DatabaseEngine {
       created_at: new Date().toISOString(),
     };
     this.auditLogs.unshift(entry);
+    this.persist();
     return entry;
   }
 
@@ -406,6 +469,7 @@ class DatabaseEngine {
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour
     this.resetTokens.set(token, { userId, token, expiresAt, used: false });
+    this.persist();
     return token;
   }
 
@@ -425,6 +489,7 @@ class DatabaseEngine {
     if (record) {
       record.used = true;
     }
+    this.persist();
     return true;
   }
 
