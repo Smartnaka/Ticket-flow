@@ -16,7 +16,6 @@ import React, { useEffect, useState } from 'react';
 
 import { AuthModal } from './components/AuthModal';
 import { CheckoutModal } from './components/CheckoutModal';
-import { DevToolsPanel } from './components/DevToolsPanel';
 import { EventCard } from './components/EventCard';
 import { Navbar } from './components/Navbar';
 import { OrganizerCreateEventModal } from './components/OrganizerCreateEventModal';
@@ -27,7 +26,7 @@ import { Event, Order, Ticket as TicketTypeItem, User, UserRole } from './types'
 
 export default function App() {
   const [role, setRole] = useState<UserRole>('CUSTOMER');
-  const [currentView, setCurrentView] = useState('events'); // events | event-detail | my-tickets | organizer-dashboard | admin-dashboard | dev-tools | payment-status
+  const [currentView, setCurrentView] = useState('events'); // events | event-detail | my-tickets | organizer-dashboard | admin-dashboard | payment-status
   const [user, setUser] = useState<User | null>(null);
   const [userToken, setUserToken] = useState<string | null>(localStorage.getItem('tw_auth_token'));
 
@@ -677,8 +676,6 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 6: DEV TOOLS & TESTING STUDIO */}
-        {currentView === 'dev-tools' && <DevToolsPanel />}
 
         {/* VIEW 7: PAYMENT STATUS CALLBACK PAGE */}
         {currentView === 'payment-status' && (

@@ -1,5 +1,5 @@
 {
-  "name": "react-example",
+  "name": "ticketwave",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,8 +7,9 @@
     "dev": "tsx server.ts",
     "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
-    "test": "tsx src/tests/run-tests.ts",
-    "lint": "tsc --noEmit"
+    "test": "rm -f data/test-ticketwave.db data/test-ticketwave.db-* && DATABASE_URL=file:./data/test-ticketwave.db tsx src/tests/run-tests.ts && rm -f data/test-ticketwave.db data/test-ticketwave.db-*",
+    "lint": "tsc --noEmit",
+    "db:backup": "node --experimental-sqlite -e \"console.log('SQLite database is stored at DATABASE_URL; use your platform volume snapshot facility.')\""
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

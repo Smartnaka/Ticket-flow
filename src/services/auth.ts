@@ -3,7 +3,11 @@ import jwt from 'jsonwebtoken';
 import { db } from '../db/database';
 import { User, UserRole } from '../types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ticketwave_super_secret_jwt_key_32_bytes_min!';
+function jwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error('JWT_SECRET is not configured.');
+  return secret;
+}
 
 export interface AuthTokenPayload {
   userId: string;
@@ -26,12 +30,12 @@ export class AuthService {
       email: user.email,
       role: user.role,
     };
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+    return jwt.sign(payload, jwtSecret(), { expiresIn: '7d' });
   }
 
   public static verifyToken(token: string): AuthTokenPayload | null {
     try {
-      return jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
+      return jwt.verify(token, jwtSecret()) as AuthTokenPayload;
     } catch {
       return null;
     }
