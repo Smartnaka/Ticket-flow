@@ -120,14 +120,7 @@ export class FlutterwaveSandboxProvider implements PaymentProvider {
   }
 
   public async refundPayment(params: RefundPaymentParams): Promise<RefundPaymentResponse> {
-    const refundRef = `flw_rf_${crypto.randomBytes(6).toString('hex')}`;
-    return {
-      success: true,
-      refund_reference: refundRef,
-      status: 'REFUNDED',
-      amount_kobo: params.amount_kobo,
-      raw_data: { provider: 'flutterwave_sandbox', reason: params.reason },
-    };
+    throw new Error('Flutterwave refunds require a provider transaction ID, which is not yet persisted for this provider.');
   }
 
   public verifyWebhookSignature(payloadRaw: string, signature: string): boolean {

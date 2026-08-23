@@ -30,6 +30,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   const refundAmountKobo = Number(amount_kobo) || order.total_kobo;
+  if (!Number.isInteger(refundAmountKobo) || refundAmountKobo < 1 || refundAmountKobo > order.total_kobo) return res.status(400).json({ error: 'amount_kobo must be a positive integer no greater than the order total' });
 
   // Find payment
   let paymentRecord = undefined;
@@ -65,16 +66,18 @@ router.post('/', async (req: Request, res: Response) => {
 
     db.refunds.set(refundEntry.id, refundEntry);
 
-    // Update order status
-    order.status = 'REFUNDED';
-    order.updated_at = new Date().toISOString();
-    db.orders.set(order.id, order);
+    // A pending refund must not revoke admission before provider confirmation.
+    if (refundRes.status === 'REFUNDED') {
+      order.status = 'REFUNDED';
+      order.updated_at = new Date().toISOString();
+      db.orders.set(order.id, order);
 
     // Update tickets status
-    for (const tkt of db.tickets.values()) {
-      if (tkt.order_id === order.id) {
-        tkt.status = 'REFUNDED';
-        db.tickets.set(tkt.id, tkt);
+      for (const tkt of db.tickets.values()) {
+        if (tkt.order_id === order.id) {
+          tkt.status = 'REFUNDED';
+          db.tickets.set(tkt.id, tkt);
+        }
       }
     }
 

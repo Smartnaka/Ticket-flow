@@ -1,4 +1,4 @@
-import { Calendar, ShieldCheck, Ticket, User, Zap } from 'lucide-react';
+import { Calendar, ShieldCheck, Ticket, User } from 'lucide-react';
 import React from 'react';
 import { UserRole } from '../types';
 
@@ -102,16 +102,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Actions: Dev Tools & Auth Profile */}
         <div className="flex items-center space-x-3">
-          <button
-            onClick={() => onNavigate('dev-tools')}
-            title="Open Webhook Inspector & API Dev Tools"
-            className={`p-2 rounded-xl border border-slate-800 text-slate-300 hover:bg-slate-800 transition ${
-              currentView === 'dev-tools' ? 'bg-indigo-600/30 border-indigo-500 text-indigo-300' : ''
-            }`}
-          >
-            <Zap className="w-4 h-4 text-emerald-400" />
-          </button>
-
           {user ? (
             <div className="flex items-center space-x-3 border-l border-slate-800 pl-3">
               <div className="flex items-center space-x-2">
