@@ -17,7 +17,7 @@ TicketWave is an event ticketing and payment processing platform designed for or
 
 - **Frontend**: React 19, TypeScript, Tailwind CSS v4, Lucide React, Motion.
 - **Backend**: Express 4, Node.js, `tsx`, `esbuild`.
-- **Database**: SQL Relational Architecture with ACID transaction isolation.
+- **Database**: Durable SQLite storage on a persistent volume for a single server instance.
 - **Payments**: Paystack Sandbox & Flutterwave Sandbox providers.
 - **Security & Utilities**: `bcryptjs`, `jsonwebtoken`, `qrcode`, `crypto`.
 
@@ -48,3 +48,4 @@ npm test
 - [`WEBHOOKS.md`](./WEBHOOKS.md): Signature validation, idempotency engine, and payload handlers.
 - [`API.md`](./API.md): Full REST API endpoint reference and payload examples.
 - [`DEPLOYMENT.md`](./DEPLOYMENT.md): Containerization, environment variables, and Cloud Run production setup.
+- [`PRODUCTION_READINESS.md`](./PRODUCTION_READINESS.md): Required services, production configuration, persistence, and operational checklist.

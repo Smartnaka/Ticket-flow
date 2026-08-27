@@ -8,18 +8,11 @@ const router = Router();
 // GET /api/my-tickets
 router.get('/my-tickets', (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
-  const emailQuery = req.query.email as string;
-
-  let customerId = '';
-  let customerEmail = emailQuery || '';
-
-  if (authHeader) {
-    const user = AuthService.getUserFromToken(authHeader.replace('Bearer ', ''));
-    if (user) {
-      customerId = user.id;
-      customerEmail = user.email;
-    }
-  }
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  const user = AuthService.getUserFromToken(authHeader.replace('Bearer ', ''));
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+  const customerId = user.id;
+  const customerEmail = user.email;
 
   const allTickets = Array.from(db.tickets.values());
   const userTickets = allTickets.filter((t) => (customerId && t.customer_id === customerId) || (customerEmail && t.customer_email.toLowerCase() === customerEmail.toLowerCase()));
@@ -31,10 +24,15 @@ router.get('/my-tickets', (req: Request, res: Response) => {
 
 // GET /api/tickets/:id
 router.get('/:id', (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  const user = authHeader && AuthService.getUserFromToken(authHeader.replace('Bearer ', ''));
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
   const ticket = db.tickets.get(req.params.id);
   if (!ticket) {
     return res.status(404).json({ error: 'Ticket not found' });
   }
+  const organizer = Array.from(db.organizers.values()).find((profile) => profile.user_id === user.id);
+  if (user.role !== 'ADMIN' && ticket.customer_id !== user.id && ticket.event_id !== undefined && organizer?.id !== db.getEventById(ticket.event_id)?.organizer_id) return res.status(403).json({ error: 'Permission denied' });
   res.json(ticket);
 });
 

@@ -94,18 +94,18 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/45  p-4 overflow-y-auto">
+      <div className="bg-white border border-zinc-100 rounded-xl w-full max-w-3xl p-6 sm:p-8 shadow-sm space-y-6 relative my-8">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg transition"
+          className="absolute top-5 right-5 text-zinc-600 hover:text-zinc-950 p-1 rounded-lg transition"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="space-y-1">
-          <h2 className="text-xl sm:text-2xl font-bold text-white">Publish New Event</h2>
-          <p className="text-xs text-slate-400">Configure event details and ticket pricing tiers</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-zinc-950">Publish New Event</h2>
+          <p className="text-xs text-zinc-600">Configure event details and ticket pricing tiers</p>
         </div>
 
         {error && (
@@ -117,29 +117,29 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* General Information */}
           <div className="space-y-4">
-            <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">
+            <h3 className="text-xs font-semibold uppercase text-zinc-600 tracking-wider">
               1. Event Overview
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-slate-300 mb-1">Event Title</label>
+                <label className="block text-xs text-zinc-700 mb-1">Event Title</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. West Africa Tech Summit 2026"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-300 mb-1">Category</label>
+                <label className="block text-xs text-zinc-700 mb-1">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 >
                   <option value="Technology & AI">Technology & AI</option>
                   <option value="Music & Concerts">Music & Concerts</option>
@@ -151,89 +151,89 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
             </div>
 
             <div>
-              <label className="block text-xs text-slate-300 mb-1">Event Description</label>
+              <label className="block text-xs text-zinc-700 mb-1">Event Description</label>
               <textarea
                 required
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Comprehensive description of keynotes, speakers, schedule..."
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 resize-none"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600 resize-none"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs text-slate-300 mb-1">Venue / Location</label>
+                <label className="block text-xs text-zinc-700 mb-1">Venue / Location</label>
                 <input
                   type="text"
                   required
                   value={venue}
                   onChange={(e) => setVenue(e.target.value)}
                   placeholder="Eko Hotel Grand Ballroom"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-300 mb-1">City</label>
+                <label className="block text-xs text-zinc-700 mb-1">City</label>
                 <input
                   type="text"
                   required
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Lagos"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-300 mb-1">Cover Image URL</label>
+                <label className="block text-xs text-zinc-700 mb-1">Cover Image URL</label>
                 <input
                   type="url"
                   value={coverImage}
                   onChange={(e) => setCoverImage(e.target.value)}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-slate-300 mb-1">Start Date & Time</label>
+                <label className="block text-xs text-zinc-700 mb-1">Start Date & Time</label>
                 <input
                   type="datetime-local"
                   required
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-300 mb-1">End Date & Time</label>
+                <label className="block text-xs text-zinc-700 mb-1">End Date & Time</label>
                 <input
                   type="datetime-local"
                   required
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
             </div>
           </div>
 
           {/* Ticket Types Builder */}
-          <div className="space-y-4 pt-4 border-t border-slate-800">
+          <div className="space-y-4 pt-4 border-t border-zinc-100">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">
+              <h3 className="text-xs font-semibold uppercase text-zinc-600 tracking-wider">
                 2. Ticket Pricing & Inventory Tiers
               </h3>
               <button
                 type="button"
                 onClick={handleAddTicketType}
-                className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center space-x-1"
+                className="text-xs text-teal-700 hover:text-teal-600 font-semibold flex items-center space-x-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Ticket Tier</span>
@@ -242,12 +242,12 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
 
             <div className="space-y-3">
               {ticketTypes.map((tt, idx) => (
-                <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-3 relative">
+                <div key={idx} className="p-4 bg-zinc-50 border border-zinc-100 rounded-lg space-y-3 relative">
                   {ticketTypes.length > 1 && (
                     <button
                       type="button"
                       onClick={() => handleRemoveTicketType(idx)}
-                      className="absolute top-3 right-3 text-slate-500 hover:text-rose-400 transition"
+                      className="absolute top-3 right-3 text-zinc-500 hover:text-rose-400 transition"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -255,19 +255,19 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
 
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div className="sm:col-span-2">
-                      <label className="block text-[11px] text-slate-400 mb-1">Tier Name</label>
+                      <label className="block text-[11px] text-zinc-600 mb-1">Tier Name</label>
                       <input
                         type="text"
                         required
                         value={tt.name}
                         onChange={(e) => handleTicketTypeChange(idx, 'name', e.target.value)}
                         placeholder="e.g. VIP Pass"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100"
+                        className="w-full bg-white border border-zinc-100 rounded-lg px-3 py-1.5 text-xs text-zinc-950"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Price (₦)</label>
+                      <label className="block text-[11px] text-zinc-600 mb-1">Price (₦)</label>
                       <input
                         type="number"
                         required
@@ -275,12 +275,12 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
                         value={tt.price}
                         onChange={(e) => handleTicketTypeChange(idx, 'price', e.target.value)}
                         placeholder="15000"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100 font-mono"
+                        className="w-full bg-white border border-zinc-100 rounded-lg px-3 py-1.5 text-xs text-zinc-950 font-mono"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Total Quantity</label>
+                      <label className="block text-[11px] text-zinc-600 mb-1">Total Quantity</label>
                       <input
                         type="number"
                         required
@@ -288,7 +288,7 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
                         value={tt.quantity}
                         onChange={(e) => handleTicketTypeChange(idx, 'quantity', e.target.value)}
                         placeholder="100"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100 font-mono"
+                        className="w-full bg-white border border-zinc-100 rounded-lg px-3 py-1.5 text-xs text-zinc-950 font-mono"
                       />
                     </div>
                   </div>
@@ -300,7 +300,7 @@ export const OrganizerCreateEventModal: React.FC<OrganizerCreateEventModalProps>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl shadow-xl transition disabled:opacity-50"
+            className="w-full bg-teal-700 hover:bg-teal-600 text-white font-bold py-3.5 rounded-lg shadow-sm transition disabled:opacity-50"
           >
             {loading ? 'Creating Event & Ticket Tiers...' : 'Publish Event Live'}
           </button>

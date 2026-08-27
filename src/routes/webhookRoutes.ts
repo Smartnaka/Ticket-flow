@@ -6,7 +6,7 @@ const router = Router();
 // POST /api/webhooks/payments
 router.post('/payments', async (req: Request, res: Response) => {
   // Capture raw body for signature verification
-  const rawPayload = JSON.stringify(req.body);
+  const rawPayload = (req as Request & { rawBody?: string }).rawBody || JSON.stringify(req.body);
   const signature =
     (req.headers['x-bachs-signature'] as string) ||
     (req.headers['x-paystack-signature'] as string) ||

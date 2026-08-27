@@ -114,14 +114,13 @@ export class PaystackSandboxProvider implements PaymentProvider {
   }
 
   public async refundPayment(params: RefundPaymentParams): Promise<RefundPaymentResponse> {
-    const refundRef = `pstk_rf_${crypto.randomBytes(6).toString('hex')}`;
-    return {
-      success: true,
-      refund_reference: refundRef,
-      status: 'REFUNDED',
-      amount_kobo: params.amount_kobo,
-      raw_data: { provider: 'paystack_sandbox', reason: params.reason },
-    };
+    const response = await fetch('https://api.paystack.co/refund', {
+      method: 'POST', headers: { Authorization: `Bearer ${this.secretKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transaction: params.payment_reference, amount: params.amount_kobo }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.status) throw new Error(`Paystack refund failed: ${data.message || response.statusText}`);
+    return { success: true, refund_reference: data.data?.refund_reference || data.data?.id, status: data.data?.status === 'processed' ? 'REFUNDED' : 'PENDING', amount_kobo: params.amount_kobo, raw_data: data.data };
   }
 
   public verifyWebhookSignature(payloadRaw: string, signature: string): boolean {
