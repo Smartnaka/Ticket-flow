@@ -89,22 +89,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl p-6 sm:p-8 shadow-2xl space-y-6 relative my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/45  p-4 overflow-y-auto">
+      <div className="bg-white border border-zinc-100 rounded-xl w-full max-w-xl p-6 sm:p-8 shadow-sm space-y-6 relative my-8">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg transition"
+          className="absolute top-5 right-5 text-zinc-600 hover:text-zinc-950 p-1 rounded-lg transition"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="space-y-1">
-          <div className="flex items-center space-x-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center space-x-2 text-teal-700 text-xs font-semibold uppercase tracking-wider">
             <Lock className="w-3.5 h-3.5" />
             <span>256-Bit Encrypted Checkout</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white">Complete Your Ticket Order</h2>
-          <p className="text-xs text-slate-400">{event.title} • {event.venue}, {event.city}</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-zinc-950">Complete Your Ticket Order</h2>
+          <p className="text-xs text-zinc-600">{event.title} • {event.venue}, {event.city}</p>
         </div>
 
         {error && (
@@ -115,38 +115,38 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         )}
 
         {/* Selected Items Breakdown */}
-        <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <div className="bg-zinc-50/70 border border-zinc-100 rounded-lg p-4 space-y-3">
+          <h3 className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
             Order Summary
           </h3>
-          <div className="space-y-2 divide-y divide-slate-800/60">
+          <div className="space-y-2 divide-y divide-zinc-100/60">
             {selectedTickets.map(({ ticketType, quantity }) => (
               <div key={ticketType.id} className="pt-2 first:pt-0 flex justify-between text-sm">
                 <div>
-                  <span className="font-semibold text-white">{ticketType.name}</span>
-                  <span className="text-xs text-slate-400 ml-2">× {quantity}</span>
+                  <span className="font-semibold text-zinc-950">{ticketType.name}</span>
+                  <span className="text-xs text-zinc-600 ml-2">× {quantity}</span>
                 </div>
-                <span className="font-mono text-slate-200">
+                <span className="font-mono text-zinc-800">
                   ₦{((ticketType.price_kobo * quantity) / 100).toLocaleString()}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="pt-3 border-t border-slate-800 text-xs space-y-1.5 text-slate-400">
+          <div className="pt-3 border-t border-zinc-100 text-xs space-y-1.5 text-zinc-600">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="font-mono text-slate-200">₦{(subtotalKobo / 100).toLocaleString()}</span>
+              <span className="font-mono text-zinc-800">₦{(subtotalKobo / 100).toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
               <span>Platform Service Fee (5%)</span>
-              <span className="font-mono text-slate-200">₦{(platformFeeKobo / 100).toLocaleString()}</span>
+              <span className="font-mono text-zinc-800">₦{(platformFeeKobo / 100).toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
               <span>Processing Fee</span>
-              <span className="font-mono text-slate-200">₦{(processingFeeKobo / 100).toLocaleString()}</span>
+              <span className="font-mono text-zinc-800">₦{(processingFeeKobo / 100).toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-base font-bold text-emerald-400 pt-2 border-t border-slate-800">
+            <div className="flex justify-between text-base font-bold text-teal-700 pt-2 border-t border-zinc-100">
               <span>Total Amount</span>
               <span className="font-mono">₦{(totalKobo / 100).toLocaleString()}</span>
             </div>
@@ -156,49 +156,49 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {/* Customer Information Form */}
         <form onSubmit={handleProceedToPayment} className="space-y-4">
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <h3 className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
               Ticket Holder Information
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-300 mb-1">Full Name</label>
+                <label className="block text-xs text-zinc-700 mb-1">Full Name</label>
                 <input
                   type="text"
                   required
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="e.g. Chidi Okonkwo"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 mb-1">Email Address</label>
+                <label className="block text-xs text-zinc-700 mb-1">Email Address</label>
                 <input
                   type="email"
                   required
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs text-slate-300 mb-1">Phone Number</label>
+              <label className="block text-xs text-zinc-700 mb-1">Phone Number</label>
               <input
                 type="tel"
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 placeholder="+234 801 234 5678"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
               />
             </div>
           </div>
 
           {/* Provider Selection */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
               Select Payment Gateway
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -207,15 +207,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 onClick={() => setProvider('bachs')}
                 className={`p-3 rounded-xl border flex items-center justify-between transition ${
                   provider === 'bachs'
-                    ? 'border-indigo-500 bg-indigo-500/10 text-white'
-                    : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                    ? 'border-teal-600 bg-teal-600/10 text-teal-700'
+                    : 'border-zinc-100 bg-zinc-50 text-zinc-600 hover:border-zinc-200'
                 }`}
               >
                 <div className="flex items-center space-x-1.5">
                   <CreditCard className="w-4 h-4 text-cyan-400" />
                   <span className="text-xs font-bold">Bachs.io</span>
                 </div>
-                {provider === 'bachs' && <ShieldCheck className="w-4 h-4 text-indigo-400" />}
+                {provider === 'bachs' && <ShieldCheck className="w-4 h-4 text-teal-700" />}
               </button>
 
               <button
@@ -223,15 +223,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 onClick={() => setProvider('paystack')}
                 className={`p-3 rounded-xl border flex items-center justify-between transition ${
                   provider === 'paystack'
-                    ? 'border-indigo-500 bg-indigo-500/10 text-white'
-                    : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                    ? 'border-teal-600 bg-teal-600/10 text-teal-700'
+                    : 'border-zinc-100 bg-zinc-50 text-zinc-600 hover:border-zinc-200'
                 }`}
               >
                 <div className="flex items-center space-x-1.5">
-                  <CreditCard className="w-4 h-4 text-emerald-400" />
+                  <CreditCard className="w-4 h-4 text-teal-700" />
                   <span className="text-xs font-bold">Paystack</span>
                 </div>
-                {provider === 'paystack' && <ShieldCheck className="w-4 h-4 text-indigo-400" />}
+                {provider === 'paystack' && <ShieldCheck className="w-4 h-4 text-teal-700" />}
               </button>
 
               <button
@@ -239,15 +239,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 onClick={() => setProvider('flutterwave')}
                 className={`p-3 rounded-xl border flex items-center justify-between transition ${
                   provider === 'flutterwave'
-                    ? 'border-indigo-500 bg-indigo-500/10 text-white'
-                    : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                    ? 'border-teal-600 bg-teal-600/10 text-teal-700'
+                    : 'border-zinc-100 bg-zinc-50 text-zinc-600 hover:border-zinc-200'
                 }`}
               >
                 <div className="flex items-center space-x-1.5">
-                  <CreditCard className="w-4 h-4 text-amber-400" />
+                  <CreditCard className="w-4 h-4 text-orange-700" />
                   <span className="text-xs font-bold">Flutterwave</span>
                 </div>
-                {provider === 'flutterwave' && <ShieldCheck className="w-4 h-4 text-indigo-400" />}
+                {provider === 'flutterwave' && <ShieldCheck className="w-4 h-4 text-teal-700" />}
               </button>
             </div>
           </div>
@@ -255,7 +255,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <button
             type="submit"
             disabled={loading || selectedTickets.length === 0}
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl shadow-xl transition disabled:opacity-50 flex items-center justify-center space-x-2"
+            className="w-full bg-teal-700 hover:bg-teal-600 text-white font-bold py-3.5 rounded-lg shadow-sm transition disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             {loading ? (
               <span>Reserving Inventory & Initializing Payment...</span>

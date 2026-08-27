@@ -117,17 +117,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-6 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/45  p-4">
+      <div className="bg-white border border-zinc-100 rounded-lg w-full max-w-md p-6 shadow-sm space-y-6 relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg transition"
+          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-950 p-1 rounded-lg transition"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="space-y-1">
-          <h2 className="text-xl font-bold text-white">
+          <h2 className="text-xl font-bold text-zinc-950">
             {mode === 'register'
               ? 'Create TicketWave Account'
               : mode === 'forgot'
@@ -136,7 +136,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               ? 'Choose a New Password'
               : 'Welcome Back'}
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-zinc-600">
             {mode === 'register'
               ? 'Join thousands of eventgoers and organizers'
               : mode === 'forgot'
@@ -154,7 +154,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         )}
 
         {infoMsg && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-xs">
+          <div className="p-3 bg-teal-600/10 border border-teal-600/20 text-teal-700 rounded-xl text-xs">
             {infoMsg}
           </div>
         )}
@@ -163,7 +163,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           {mode === 'register' && (
             <>
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-700 mb-1">
                   Full Name
                 </label>
                 <input
@@ -172,12 +172,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Chidi Okonkwo"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-700 mb-1">
                   Phone Number
                 </label>
                 <input
@@ -185,18 +185,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+234 801 234 5678"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-700 mb-1">
                   Account Type
                 </label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
                 >
                   <option value="CUSTOMER">Customer (Buy Tickets)</option>
                   <option value="ORGANIZER">Organizer (Host & Sell Events)</option>
@@ -207,7 +207,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
           {mode !== 'reset' && (
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-zinc-700 mb-1">
                 Email Address
               </label>
             <input
@@ -216,7 +216,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
               />
             </div>
           )}
@@ -224,7 +224,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           {mode !== 'forgot' && (
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="block text-xs font-medium text-slate-300">
+                <label className="block text-xs font-medium text-zinc-700">
                   Password
                 </label>
                 {mode === 'login' && (
@@ -235,7 +235,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                       setError('');
                       setInfoMsg('');
                     }}
-                    className="text-[11px] text-indigo-400 hover:text-indigo-300 transition"
+                    className="text-[11px] text-teal-700 hover:text-teal-600 transition"
                   >
                     Forgot Password?
                   </button>
@@ -247,14 +247,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
               />
             </div>
           )}
 
           {(mode === 'register' || mode === 'reset') && (
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-zinc-700 mb-1">
                 Confirm Password
               </label>
               <input
@@ -263,7 +263,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600"
               />
             </div>
           )}
@@ -271,7 +271,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg transition disabled:opacity-50"
+            className="w-full bg-teal-700 hover:bg-teal-600 text-white font-semibold py-3 rounded-xl shadow-sm transition disabled:opacity-50"
           >
             {loading
               ? 'Processing...'
@@ -293,7 +293,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                 setError('');
                 setInfoMsg('');
               }}
-              className="text-xs text-indigo-400 hover:text-indigo-300 transition"
+              className="text-xs text-teal-700 hover:text-teal-600 transition"
             >
               Don't have an account? Register
             </button>
@@ -306,7 +306,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                 setError('');
                 setInfoMsg('');
               }}
-              className="text-xs text-indigo-400 hover:text-indigo-300 transition"
+              className="text-xs text-teal-700 hover:text-teal-600 transition"
             >
               Back to Sign In
             </button>

@@ -55,22 +55,22 @@ export const RefundModal: React.FC<RefundModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-6 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/45  p-4">
+      <div className="bg-white border border-zinc-100 rounded-xl w-full max-w-md p-6 shadow-sm space-y-6 relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg transition"
+          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-950 p-1 rounded-lg transition"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="space-y-1">
-          <div className="flex items-center space-x-2 text-amber-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center space-x-2 text-orange-700 text-xs font-semibold uppercase tracking-wider">
             <AlertTriangle className="w-4 h-4" />
             <span>Process Payment Refund</span>
           </div>
-          <h2 className="text-xl font-bold text-white">Refund Order #{order.id}</h2>
-          <p className="text-xs text-slate-400">
+          <h2 className="text-xl font-bold text-zinc-950">Refund Order #{order.id}</h2>
+          <p className="text-xs text-zinc-600">
             Customer: {order.customer_name} ({order.customer_email})
           </p>
         </div>
@@ -81,14 +81,14 @@ export const RefundModal: React.FC<RefundModalProps> = ({
           </div>
         )}
 
-        <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2 text-xs">
-          <div className="flex justify-between text-slate-400">
+        <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-lg space-y-2 text-xs">
+          <div className="flex justify-between text-zinc-600">
             <span>Payment Reference</span>
-            <span className="font-mono text-white">{order.payment_reference}</span>
+            <span className="font-mono text-zinc-950">{order.payment_reference}</span>
           </div>
-          <div className="flex justify-between text-slate-400">
+          <div className="flex justify-between text-zinc-600">
             <span>Refund Amount</span>
-            <span className="font-bold text-emerald-400 font-mono text-sm">
+            <span className="font-bold text-teal-700 font-mono text-sm">
               ₦{(order.total_kobo / 100).toLocaleString()}
             </span>
           </div>
@@ -96,7 +96,7 @@ export const RefundModal: React.FC<RefundModalProps> = ({
 
         <form onSubmit={handleRefundSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-zinc-700 mb-1">
               Reason for Refund
             </label>
             <textarea
@@ -105,14 +105,14 @@ export const RefundModal: React.FC<RefundModalProps> = ({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g. Event date changed / Customer request"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 resize-none"
+              className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-3.5 py-2.5 text-sm text-zinc-950 focus:outline-none focus:border-teal-600 resize-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-2xl shadow-lg transition disabled:opacity-50 flex items-center justify-center space-x-2"
+            className="w-full bg-orange-700 hover:bg-orange-600 text-white font-bold py-3 rounded-lg shadow-sm transition disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             {loading ? (
               <span>Executing Provider Refund API...</span>
