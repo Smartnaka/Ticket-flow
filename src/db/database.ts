@@ -434,6 +434,13 @@ class DatabaseEngine {
     return undefined;
   }
 
+  public getUserByPhone(phone: string): User | undefined {
+    for (const u of this.users.values()) {
+      if (u.phone === phone) return u;
+    }
+    return undefined;
+  }
+
   public getUserById(id: string): User | undefined {
     return this.users.get(id);
   }

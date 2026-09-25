@@ -2,15 +2,45 @@ import { Request, Response, Router } from 'express';
 import { db } from '../db/database';
 import { AuthService } from '../services/auth';
 import { EmailService } from '../services/email';
+import {
+  isValidEmail,
+  MAX_NAME_LENGTH,
+  MAX_PASSWORD_LENGTH,
+  NIGERIAN_PHONE_DIGITS,
+  normalizeEmail,
+  normalizeName,
+  normalizeNigerianPhoneInput,
+  toNigerianE164,
+} from '../utils/authValidation';
 
 const router = Router();
 
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
-  const { email, password, name, phone, role } = req.body;
+  const { password, role } = req.body;
+  const email = typeof req.body.email === 'string' ? normalizeEmail(req.body.email) : '';
+  const name = typeof req.body.name === 'string' ? normalizeName(req.body.name) : '';
+  const rawPhone = typeof req.body.phone === 'string' ? req.body.phone : '';
+  const phoneResult = normalizeNigerianPhoneInput(rawPhone);
 
-  if (!email || !password || !name) {
-    return res.status(400).json({ error: 'Email, password, and name are required.' });
+  if (!email || typeof password !== 'string' || !name || !rawPhone.trim()) {
+    return res.status(400).json({ error: 'Name, email, password, and phone number are required.' });
+  }
+
+  if (name.length > MAX_NAME_LENGTH) {
+    return res.status(400).json({ error: `Name must be ${MAX_NAME_LENGTH} characters or fewer.` });
+  }
+
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: 'Enter a valid email address.' });
+  }
+
+  if (phoneResult.error || phoneResult.digits.length !== NIGERIAN_PHONE_DIGITS) {
+    return res.status(400).json({ error: phoneResult.error || 'Enter a valid 10-digit Nigerian phone number after +234.' });
+  }
+
+  if (password.length > MAX_PASSWORD_LENGTH) {
+    return res.status(400).json({ error: `Password must be ${MAX_PASSWORD_LENGTH} characters or fewer.` });
   }
 
   if (password.length < 6) {
@@ -22,6 +52,11 @@ router.post('/register', async (req: Request, res: Response) => {
     return res.status(409).json({ error: 'A user with this email address already exists.' });
   }
 
+  const phone = toNigerianE164(phoneResult.digits);
+  if (db.getUserByPhone(phone)) {
+    return res.status(409).json({ error: 'A user with this phone number already exists.' });
+  }
+
   const userRole = role === 'ORGANIZER' ? 'ORGANIZER' : 'CUSTOMER';
   const passwordHash = AuthService.hashPassword(password);
 
@@ -29,7 +64,7 @@ router.post('/register', async (req: Request, res: Response) => {
     {
       email,
       name,
-      phone: phone || '',
+      phone,
       role: userRole,
     },
     passwordHash,
@@ -46,7 +81,14 @@ router.post('/register', async (req: Request, res: Response) => {
     details_json: JSON.stringify({ email: user.email, role: user.role }),
   });
 
-  await EmailService.sendWelcomeEmail(user.email, { name: user.name, role: user.role });
+  // Account creation has already succeeded. A mail-provider failure must not
+  // turn that success into a confusing client error (or invite a retry that
+  // creates a duplicate-account response).
+  try {
+    await EmailService.sendWelcomeEmail(user.email, { name: user.name, role: user.role });
+  } catch (error) {
+    console.error('Welcome email delivery failed after registration', { userId: user.id, error });
+  }
 
   res.status(201).json({ token, user });
 });

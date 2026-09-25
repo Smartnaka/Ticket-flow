@@ -4,6 +4,12 @@ import { EmailService } from '../services/email';
 import { PaystackSandboxProvider } from '../services/payment/paystack';
 import { TicketService } from '../services/ticket';
 import { WebhookService } from '../services/webhook';
+import {
+  normalizeEmail,
+  normalizeName,
+  normalizeNigerianPhoneInput,
+  toNigerianE164,
+} from '../utils/authValidation';
 
 async function runAllTests() {
   db.seedInitialDataForDevelopment();
@@ -23,6 +29,16 @@ async function runAllTests() {
       failed++;
     }
   }
+
+  // TEST 0: Signup input normalization
+  console.log('\n0. UNIT TEST: Signup Input Normalization');
+  assert(normalizeName('  Chidi   Okonkwo  ') === 'Chidi Okonkwo', 'Name whitespace is normalized');
+  assert(normalizeEmail('  CHIDI@EXAMPLE.COM ') === 'chidi@example.com', 'Email is trimmed and normalized');
+  const normalizedLocalPhone = normalizeNigerianPhoneInput('0801 234-5678');
+  assert(toNigerianE164(normalizedLocalPhone.digits) === '+2348012345678', 'Local Nigerian phone is converted to E.164');
+  const normalizedInternationalPhone = normalizeNigerianPhoneInput('+234 (801) 234-5678');
+  assert(toNigerianE164(normalizedInternationalPhone.digits) === '+2348012345678', 'International Nigerian phone is not double-prefixed');
+  assert(Boolean(normalizeNigerianPhoneInput('801abc5678').error), 'Unsupported phone characters are rejected');
 
   // TEST 1: Price calculation in minor units (Kobo)
   console.log('\n1. UNIT TEST: Price & Fee Calculations (Kobo)');
